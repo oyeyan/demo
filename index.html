@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>APP官方下载站 - PC电脑端 | 安卓APK / iOS安装包高速下载</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Roboto', system-ui, -apple-system, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #e9f0ff 0%, #f5f7fc 100%);
+            min-height: 100vh;
+            padding: 40px 32px;
+            color: #1e293b;
+        }
+
+        /* PC 宽屏容器   max-width 更大，展现完整信息 */
+        .download-wrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 48px;
+            box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        /* 顶栏 品牌区域 (PC大视觉) */
+        .hero-section {
+            background: linear-gradient(105deg, #0f172a 0%, #1e293b 45%, #2d3a5e 100%);
+            padding: 48px 56px;
+            position: relative;
+        }
+
+        .app-brand {
+            display: flex;
+            align-items: center;
+            gap: 28px;
+            flex-wrap: wrap;
+        }
+
+        .app-icon-large {
+            background: rgba(255, 255, 255, 0.12);
+            backdrop-filter: blur(10px);
+            border-radius: 32px;
+            padding: 18px;
+            box-shadow: 0 15px 30px -12px rgba(0,0,0,0.35);
+            border: 1px solid rgba(255,255,255,0.25);
+        }
+
+        .app-icon-large svg {
+            width: 80px;
+            height: 80px;
+            display: block;
+        }
+
+        .brand-text h1 {
+            font-size: 3.2rem;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: white;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .brand-text p {
+            font-size: 1.1rem;
+            color: #cbd5e6;
+            max-width: 500px;
+        }
+
+        .version-badge {
+            background: rgba(255,255,240,0.2);
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            display: inline-block;
+            margin-top: 12px;
+            font-weight: 500;
+        }
+
+        /* 主体内容 flex 两列布局 PC 舒适 */
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 0.9fr;
+            gap: 40px;
+            padding: 48px 56px;
+            background: #ffffff;
+        }
+
+        /* 左侧：智能下载区 + 直接安装包区块 */
+        .left-download-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+        }
+
+        .device-card {
+            background: #f8fafd;
+            border-radius: 32px;
+            padding: 20px 28px;
+            border-left: 6px solid #3b82f6;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .detect-header {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 12px;
+        }
+
+        .detect-detail {
+            font-size: 0.95rem;
+            background: #ffffffd0;
+            padding: 12px 16px;
+            border-radius: 24px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .os-chip {
+            background: #1e293b;
+            color: white;
+            padding: 6px 18px;
+            border-radius: 40px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        /* 主要大按钮 */
+        .primary-download-area {
+            background: linear-gradient(145deg, #fefefe, #f9fbfe);
+            border-radius: 40px;
+            padding: 28px;
+            text-align: center;
+            border: 1px solid #eef2ff;
+            box-shadow: 0 6px 14px rgba(0,0,0,0.03);
+        }
+
+        .btn-download-main {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 18px;
+            background: #0f172a;
+            border: none;
+            padding: 20px 44px;
+            border-radius: 80px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            width: 100%;
+            max-width: 460px;
+            margin-bottom: 20px;
+            box-shadow: 0 12px 18px -8px rgba(15,23,42,0.3);
+        }
+
+        .btn-download-main:hover {
+            background: #2d3a5e;
+            transform: scale(1.01);
+            box-shadow: 0 20px 25px -12px rgba(0,0,0,0.3);
+        }
+
+        .sub-hint {
+            font-size: 0.8rem;
+            color: #5b6e8c;
+        }
+
+        /* 文件列表 (安装包明细) 整洁卡片 */
+        .packages-section {
+            background: #ffffff;
+            border-radius: 32px;
+            border: 1px solid #eef2ff;
+            overflow: hidden;
+        }
+
+        .section-header {
+            background: #f1f5f9;
+            padding: 18px 24px;
+            font-weight: 700;
+            font-size: 1.2rem;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .package-list {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .package-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px 28px;
+            border-bottom: 1px solid #edf2f7;
+            transition: background 0.15s;
+        }
+
+        .package-item:last-child {
+            border-bottom: none;
+        }
+
+        .package-item:hover {
+            background: #fafcff;
+        }
+
+        .package-info {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .package-icon {
+            font-size: 2.4rem;
+        }
+
+        .package-name {
+            font-weight: 700;
+            font-size: 1.05rem;
+        }
+
+        .package-meta {
+            font-size: 0.7rem;
+            color: #5f7f9e;
+            margin-top: 4px;
+        }
+
+        .btn-download-sm {
+            background: #eef2ff;
+            padding: 10px 24px;
+            border-radius: 60px;
+            text-decoration: none;
+            font-weight: 600;
+            color: #2563eb;
+            transition: 0.2s;
+            font-size: 0.85rem;
+        }
+
+        .btn-download-sm:hover {
+            background: #2563eb;
+            color: white;
+        }
+
+        /* 右侧信息板块：二维码/说明 */
+        .right-info {
+            background: #fefefe;
+            border-radius: 32px;
+            border: 1px solid #eef2ff;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            height: fit-content;
+        }
+
+        .qrcard {
+            padding: 32px 28px;
+            text-align: center;
+            border-bottom: 1px solid #ecf3fa;
+        }
+
+        .qrcard h3 {
+            font-weight: 700;
+            margin-bottom: 18px;
+            font-size: 1.2rem;
+        }
+
+        .mock-qr {
+            background: linear-gradient(145deg, #1a2a3a, #0f1722);
+            width: 160px;
+            height: 160px;
+            margin: 0 auto 15px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #cbd5e1;
+            font-size: 0.8rem;
+            text-align: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        .mock-qr span {
+            background: rgba(255,255,245,0.1);
+            padding: 6px 10px;
+            border-radius: 20px;
+        }
+
+        .install-guide {
+            padding: 24px 28px;
+            background: #f9fbfe;
+        }
+
+        .install-guide h4 {
+            margin-bottom: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .guide-steps {
+            list-style: none;
+        }
+
+        .guide-steps li {
+            margin-bottom: 14px;
+            font-size: 0.9rem;
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+        }
+
+        .step-num {
+            background: #e2e8f0;
+            width: 22px;
+            height: 22px;
+            border-radius: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .footnote-pc {
+            background: #f1f5f9;
+            padding: 16px 56px;
+            text-align: center;
+            font-size: 0.75rem;
+            color: #556b86;
+            border-top: 1px solid #e2edf7;
+        }
+
+        @media (max-width: 880px) {
+            body {
+                padding: 24px 20px;
+            }
+            .main-grid {
+                grid-template-columns: 1fr;
+                padding: 32px;
+                gap: 32px;
+            }
+            .hero-section {
+                padding: 32px 28px;
+            }
+            .brand-text h1 {
+                font-size: 2.4rem;
+            }
+            .btn-download-main {
+                font-size: 1.2rem;
+                padding: 16px 28px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="download-wrapper">
+    <!-- PC 端头部品牌区 -->
+    <div class="hero-section">
+        <div class="app-brand">
+            <div class="app-icon-large">
+                <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <rect width="32" height="32" rx="10" fill="white" fill-opacity="0.2"/>
+                    <path d="M16 6C10.48 6 6 10.48 6 16s4.48 10 10 10 10-4.48 10-10S21.52 6 16 6zm-2 14h-2v-8h2v8zm4 0h-2v-8h2v8z" fill="white"/>
+                    <circle cx="16" cy="16" r="8" stroke="white" stroke-width="1.2" fill="none"/>
+                </svg>
+            </div>
+            <div class="brand-text">
+                <h1>趣享·星河APP</h1>
+                <p>新一代智能效率工具，跨平台无缝体验。官方安装包安全高速下载</p>
+                <div class="version-badge">✨ 最新版本 v4.1.0 | 稳定渠道 · 2026 release</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-grid">
+        <!-- 左侧核心下载区域 -->
+        <div class="left-download-panel">
+            <!-- 设备检测卡片 (PC端展示全面信息) -->
+            <div class="device-card">
+                <div class="detect-header">
+                    <span>🖥️</span> 当前访问设备 · 智能识别
+                </div>
+                <div class="detect-detail" id="pcDetectBox">
+                    <span id="detectInfoText">正在分析您的操作系统...</span>
+                    <span class="os-chip" id="osVersionChip">Windows/macOS</span>
+                </div>
+            </div>
+
+            <!-- 主下载按钮：智能引导（PC上推荐APK下载并引导手机安装/或展示通用包） -->
+            <div class="primary-download-area">
+                <a href="#" id="mainDownloadBtn" class="btn-download-main">
+                    ⬇️ 下载安卓安装包 (APK)
+                </a>
+                <div class="sub-hint">
+                    💡 电脑用户：点击直接下载APK文件，传输至手机即可安装；iOS用户推荐扫码或下载IPA测试包。
+                </div>
+            </div>
+
+            <!-- 安装包直接下载列表 (APK, IPA 清晰展示) -->
+            <div class="packages-section">
+                <div class="section-header">
+                    <span>📦</span> 官方安装包 (直接下载)
+                </div>
+                <div class="package-list">
+                    <!-- Android APK 条目 -->
+                    <div class="package-item" id="apkPackageItem">
+                        <div class="package-info">
+                            <div class="package-icon">🤖</div>
+                            <div>
+                                <div class="package-name">趣享星河_Android_v4.1.0.apk</div>
+                                <div class="package-meta">适用安卓 7.0+ | 大小 52.8 MB | 安全无毒</div>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-download-sm" id="apkDownloadBtn">下载 APK</a>
+                    </div>
+                    <!-- iOS IPA 条目 (企业包或演示) -->
+                    <div class="package-item" id="ipaPackageItem">
+                        <div class="package-info">
+                            <div class="package-icon">🍎</div>
+                            <div>
+                                <div class="package-name">趣享星河_iOS_v4.1.0.ipa</div>
+                                <div class="package-meta">iOS 13+ / 企业签名包 | 大小 186 MB</div>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-download-sm" id="ipaDownloadBtn">下载 IPA</a>
+                    </div>
+                    <!-- 附加通用安装包说明 或者 备用下载器 -->
+                    <div class="package-item">
+                        <div class="package-info">
+                            <div class="package-icon">📱</div>
+                            <div>
+                                <div class="package-name">手机扫描安装助手 (Windows工具)</div>
+                                <div class="package-meta">PC辅助传输工具 1.2MB</div>
+                            </div>
+                        </div>
+                        <a href="#" class="btn-download-sm" id="pcToolBtn">获取工具</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：二维码 & 安装指南 (PC 端增强) -->
+        <div class="right-info">
+            <div class="qrcard">
+                <h3>📲 手机扫码下载</h3>
+                <div class="mock-qr">
+                    <span>官方下载码<br>(动态)</span>
+                </div>
+                <p style="font-size: 0.75rem; margin-top: 12px;">使用手机相机扫描，直接下载安装包</p>
+            </div>
+            <div class="install-guide">
+                <h4><span>🔧</span> 安装指引</h4>
+                <ul class="guide-steps">
+                    <li><span class="step-num">1</span> 下载对应安装包 (APK / IPA)</li>
+                    <li><span class="step-num">2</span> 安卓：允许“安装未知应用”权限，点击APK安装</li>
+                    <li><span class="step-num">3</span> iOS：使用爱思助手或企业信任描述文件后安装IPA</li>
+                    <li><span class="step-num">4</span> 也可从App Store/Google Play搜索“趣享星河”</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="footnote-pc">
+        ⚡ 高速下载通道 · 所有安装包均经过官方签名校验 | 遇到问题联系客服 support@quxiangapp.com
+    </div>
+</div>
+
+<!-- 简易Toast提示 -->
+<div id="globalToast" style="position:fixed; bottom:30px; left:50%; transform:translateX(-50%); background:#0f172ad9; backdrop-filter:blur(12px); color:white; padding:12px 28px; border-radius:60px; font-size:0.85rem; z-index:1200; visibility:hidden; opacity:0; transition:0.2s; pointer-events:none; font-weight:500;"></div>
+
+<script>
+    (function() {
+        // ----- PC 端APP下载安装包功能，支持真实下载链接模拟 + 完整演示 -----
+        // 实际部署时，替换下方真实地址即可生效完整的下载功能
+        const CONFIG = {
+            // 真实APK文件直链 ( 请替换为您的apk地址，例如 "https://cdn.example.com/app.apk" )
+            REAL_APK_URL: "",
+            // 真实IPA文件直链 (企业包)
+            REAL_IPA_URL: "",
+            // PC工具小助手下载链接（可选）
+            PC_TOOL_URL: "",
+            // 备用演示模式（当未配置真实链接时启用模拟下载blob,仅演示）
+            DEMO_MODE: true,
+            // iOS推荐App Store 跳转地址 (可选)
+            APP_STORE_URL: "https://apps.apple.com/cn/app/id1234567890",
+            // 安卓市场引导链接
+            GOOGLE_PLAY_URL: "https://play.google.com/store/apps/details?id=com.quxiang.app"
+        };
+
+        // 获取dom元素
+        const mainDownloadBtn = document.getElementById('mainDownloadBtn');
+        const apkDownloadBtn = document.getElementById('apkDownloadBtn');
+        const ipaDownloadBtn = document.getElementById('ipaDownloadBtn');
+        const pcToolBtn = document.getElementById('pcToolBtn');
+        const detectInfoSpan = document.getElementById('detectInfoText');
+        const osChipSpan = document.getElementById('osVersionChip');
+
+        // 获取系统 / 浏览器 UA (PC端主要区分windows/mac/linux，同时展示给用户)
+        const userAgent = navigator.userAgent;
+        let isWindows = /Windows/i.test(userAgent);
+        let isMac = /Macintosh/i.test(userAgent);
+        let isLinux = /Linux/i.test(userAgent);
+        let isMobile = /Android|iPhone|iPad|iPod/i.test(userAgent); // PC访问时理论上为false但也做个保险
+
+        let currentPlatform = "PC";
+        let osLabel = "Windows";
+        if (isWindows) osLabel = "Windows 10/11";
+        else if (isMac) osLabel = "macOS";
+        else if (isLinux) osLabel = "Linux / 其他";
+        else osLabel = "PC 桌面端";
+
+        detectInfoSpan.innerText = `当前使用 ${osLabel} 系统 · 可直接下载APK或IPA文件传输至手机安装。`;
+        osChipSpan.innerText = osLabel;
+
+        // Toast 消息提示
+        function showMessage(msg, duration = 2800) {
+            const toast = document.getElementById('globalToast');
+            if (!toast) return;
+            toast.innerText = msg;
+            toast.style.visibility = 'visible';
+            toast.style.opacity = '1';
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.visibility = 'hidden';
+            }, duration);
+        }
+
+        // 模拟下载函数 (演示模式，生成blob文件展示下载能力)
+        function demoDownload(fileName, typeDesc = 'apk') {
+            const content = `这是【${fileName}】演示版本文件。\n实际生产环境中，请将下载链接替换为真实CDN地址。\n当前为演示下载安装包功能，已触发下载行为。\n如需正式安装，请替换脚本中 REAL_APK_URL 为真实链接。\n生成时间: ${new Date().toLocaleString()}`;
+            const blob = new Blob([content], {type: 'text/plain'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            // 下载文件名区分演示包
+            a.download = `${fileName.replace(/\.apk|\.ipa/i, '')}_demo.txt`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showMessage(`📦 演示下载: ${fileName} (模拟包，实际请替换真实链接)`, 3000);
+        }
+
+        // 真实下载函数 (如果配置了链接)
+        function realDownload(url, filenameHint = '') {
+            if (!url || url === "") {
+                return false;
+            }
+            // 创建隐藏链接触发下载
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filenameHint || '';
+            link.target = '_blank';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showMessage(`✅ 开始下载: ${filenameHint || '安装包'}`, 2000);
+            return true;
+        }
+
+        // 处理APK下载 (无论PC还是手机场景都可)
+        function handleApkDownload() {
+            if (CONFIG.REAL_APK_URL && CONFIG.REAL_APK_URL.trim() !== "") {
+                realDownload(CONFIG.REAL_APK_URL, "QuXiang_Android_v4.1.0.apk");
+            } else {
+                if (CONFIG.DEMO_MODE) {
+                    demoDownload("QuXiang_Android_v4.1.0.apk", "apk");
+                } else {
+                    showMessage("未配置下载链接，请联系管理员或替换真实APK地址", 2500);
+                }
+            }
+        }
+
+        // 处理IPA下载
+        function handleIpaDownload() {
+            if (CONFIG.REAL_IPA_URL && CONFIG.REAL_IPA_URL.trim() !== "") {
+                realDownload(CONFIG.REAL_IPA_URL, "QuXiang_iOS_v4.1.0.ipa");
+            } else {
+                if (CONFIG.DEMO_MODE) {
+                    demoDownload("QuXiang_iOS_v4.1.0.ipa", "ipa");
+                } else {
+                    // 若是演示模式关闭，则提示引导App Store
+                    if (CONFIG.APP_STORE_URL) {
+                        showMessage("未提供IPA直链，建议前往 App Store 下载官方正版", 2000);
+                        window.open(CONFIG.APP_STORE_URL, '_blank');
+                    } else {
+                        showMessage("暂无IPA安装包，请使用其他方式下载", 2000);
+                    }
+                }
+            }
+        }
+
+        // 处理PC小工具下载
+        function handleToolDownload() {
+            if (CONFIG.PC_TOOL_URL && CONFIG.PC_TOOL_URL.trim() !== "") {
+                realDownload(CONFIG.PC_TOOL_URL, "Quxiang_PC_Helper.exe");
+            } else {
+                if (CONFIG.DEMO_MODE) {
+                    demoDownload("Quxiang_PC传输助手_Setup.exe", "tool");
+                } else {
+                    showMessage("PC工具暂未开放，敬请期待", 2000);
+                }
+            }
+        }
+
+        // 主按钮智能行为：在PC上主推APK下载（因为绝大多数PC用户下载apk再传到手机）
+        function configMainButton() {
+            if (mainDownloadBtn) {
+                mainDownloadBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    // PC端主按钮默认下载安卓安装包
+                    handleApkDownload();
+                });
+                // 可以根据用户额外偏好，修改按钮文案
+                mainDownloadBtn.innerHTML = `⬇️ 下载安卓安装包 (APK) · 推荐`;
+            }
+        }
+
+        // 绑定各类按钮
+        function bindEvents() {
+            if (apkDownloadBtn) {
+                apkDownloadBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleApkDownload();
+                });
+            }
+            if (ipaDownloadBtn) {
+                ipaDownloadBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleIpaDownload();
+                });
+            }
+            if (pcToolBtn) {
+                pcToolBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    handleToolDownload();
+                });
+            }
+        }
+
+        // 右上模拟二维码点击轻提示，说明实际项目中可替换真实二维码图片
+        const mockQrDiv = document.querySelector('.mock-qr');
+        if (mockQrDiv) {
+            mockQrDiv.addEventListener('click', () => {
+                showMessage("📱 扫码下载: 实际部署可动态生成二维码链接至下载地址", 2000);
+            });
+        }
+
+        // 针对当前PC页面，添加额外辅助视觉: 如果有安卓手机连接提示，可以显示
+        configMainButton();
+        bindEvents();
+
+        // 若页面加载完毕给出友好控制台提示
+        console.log("PC APP下载页面已加载 | 配置模式: " + (CONFIG.DEMO_MODE ? "演示模式(模拟Blob下载)" : "正式模式(需填写真实链接)"));
+        if ((!CONFIG.REAL_APK_URL || CONFIG.REAL_APK_URL === "") && CONFIG.DEMO_MODE) {
+            console.log("提示: 当前未配置真实APK/IPA链接，演示模式下将生成示例文件下载，请替换CONFIG内REAL_APK_URL启用真实下载");
+        }
+
+        // 附加展示更详细的下载帮助（可选）
+        const mainBtnHint = document.querySelector('.sub-hint');
+        if (mainBtnHint && (!CONFIG.REAL_APK_URL || CONFIG.REAL_APK_URL === "")) {
+            // 保持原有文案，不覆盖。
+        }
+
+        // 针对PC，也可附加侧边悬浮快捷功能，略
+    })();
+</script>
+</body>
+</html>
